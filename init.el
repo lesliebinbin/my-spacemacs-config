@@ -53,8 +53,10 @@ This function should only modify configuration layer settings."
                 t latex-enable-folding t)
          multiple-cursors
          org
-         (shell :variables shell-default-height
-                30 shell-default-position 'bottom)
+         (shell :variables
+                shell-default-height 30
+                shell-default-term-shell "/bin/zsh"
+                shell-default-position 'bottom)
          spell-checking
          syntax-checking
          treemacs
@@ -62,9 +64,10 @@ This function should only modify configuration layer settings."
          docker
          pdf
          chrome
-         mu4e
+         ;; mu4e
          (geolocation :variables geolocation-enable-location-service t geolocation-enable-weather-forecast
                       t)
+         exwm
          spotify)
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -74,7 +77,9 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages
-   '(latex-preview-pane)
+   '(
+     ;;latex-preview-pane
+     )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages
    '()
@@ -488,8 +493,8 @@ before packages are loaded."
   (config-my-current-geolocation)
   ;;config-geolocation
   ;;for email
-  (load-file "~/.spacemacs.d/email-config.el")
-  (config-the-email)
+  ;; (load-file "~/.spacemacs.d/email-config.el")
+  ;; (config-the-email)
   ;;for email
   ;;config the browser in emacs
   (load-file "~/.spacemacs.d/my-browser-config.el")
@@ -504,82 +509,19 @@ before packages are loaded."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-  (custom-set-variables
-   ;; custom-set-variables was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(org-agenda-files (quote ("~/Desktop/uq_courses/deco7140/myweb/README.org")))
-   '(package-selected-packages (quote (theme-changer sunshine srefactor dockerfile-mode
-                                                     docker tablist docker-tramp spotify helm-spotify-plus
-                                                     multi mu4e-maildirs-extension mu4e-alert helm-mu
-                                                     github-search github-clone gist gh marshal
-                                                     logito forge ghub closql emacsql-sqlite emacsql
-                                                     treepy helm-w3m w3m web-mode tagedit slim-mode
-                                                     scss-mode sass-mode pug-mode impatient-mode
-                                                     helm-css-scss haml-mode emmet-mode company-web
-                                                     web-completion-data gmail-message-mode ham-mode
-                                                     html-to-markdown flymd edit-server helm-rtags
-                                                     google-c-style flycheck-rtags disaster cquery
-                                                     cpp-auto-include company-rtags rtags company-c-headers
-                                                     clang-format ccls dap-mode bui tree-mode mvn
-                                                     meghanada maven-test-mode lsp-java groovy-mode
-                                                     groovy-imports pcache gradle-mode ensime sbt-mode
-                                                     scala-mode company-emacs-eclim eclim yapfify
-                                                     stickyfunc-enhance pytest pyenv-mode py-isort
-                                                     pippel pipenv pyvenv pip-requirements lsp-python-ms
-                                                     python lsp-mode dash-functional live-py-mode
-                                                     importmagic epc ctable concurrent deferred
-                                                     helm-pydoc helm-gtags helm-cscope xcscope
-                                                     ggtags cython-mode counsel-gtags company-anaconda
-                                                     blacken anaconda-mode pythonic flyspell-correct-helm
-                                                     flyspell-correct auto-dictionary yasnippet-snippets
-                                                     xterm-color unfill smeargle shell-pop orgit
-                                                     org-projectile org-category-capture org-present
-                                                     org-pomodoro alert log4e gntp org-mime org-download
-                                                     org-cliplink org-brain mwim multi-term mmm-mode
-                                                     markdown-toc markdown-mode magit-svn magit-gitflow
-                                                     magit-popup htmlize helm-org-rifle helm-gitignore
-                                                     helm-git-grep helm-company helm-c-yasnippet
-                                                     gnuplot gitignore-templates gitignore-mode
-                                                     gitconfig-mode gitattributes-mode git-timemachine
-                                                     git-messenger git-link git-gutter-fringe+
-                                                     git-gutter-fringe fringe-helper git-gutter+
-                                                     git-gutter gh-md fuzzy flycheck-pos-tip pos-tip
-                                                     evil-org evil-magit magit transient git-commit
-                                                     with-editor eshell-z eshell-prompt-extras
-                                                     esh-help diff-hl company-statistics company
-                                                     browse-at-remote auto-yasnippet yasnippet
-                                                     ac-ispell auto-complete ws-butler writeroom-mode
-                                                     winum which-key volatile-highlights vi-tilde-fringe
-                                                     uuidgen use-package treemacs-projectile treemacs-evil
-                                                     toc-org symon symbol-overlay string-inflection
-                                                     spaceline-all-the-icons restart-emacs request
-                                                     rainbow-delimiters popwin persp-mode pcre2el
-                                                     password-generator paradox overseer org-plus-contrib
-                                                     org-bullets open-junk-file nameless move-text
-                                                     macrostep lorem-ipsum link-hint indent-guide
-                                                     hungry-delete hl-todo highlight-parentheses
-                                                     highlight-numbers highlight-indentation helm-xref
-                                                     helm-themes helm-swoop helm-purpose helm-projectile
-                                                     helm-mode-manager helm-make helm-flx helm-descbinds
-                                                     helm-ag google-translate golden-ratio font-lock+
-                                                     flycheck-package flx-ido fill-column-indicator
-                                                     fancy-battery eyebrowse expand-region evil-visualstar
-                                                     evil-visual-mark-mode evil-unimpaired evil-tutor
-                                                     evil-textobj-line evil-surround evil-numbers
-                                                     evil-nerd-commenter evil-mc evil-matchit evil-lisp-state
-                                                     evil-lion evil-indent-plus evil-iedit-state
-                                                     evil-goggles evil-exchange evil-escape evil-ediff
-                                                     evil-cleverparens evil-args evil-anzu eval-sexp-fu
-                                                     elisp-slime-nav editorconfig dumb-jump dotenv-mode
-                                                     doom-modeline diminish devdocs define-word
-                                                     counsel-projectile column-enforce-mode clean-aindent-mode
-                                                     centered-cursor-mode auto-highlight-symbol
-                                                     auto-compile aggressive-indent ace-link ace-jump-helm-line))))
-  (custom-set-faces
-   ;; custom-set-faces was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   ))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-agenda-files (quote ("~/Desktop/uq_courses/deco7140/myweb/README.org")))
+ '(package-selected-packages
+   (quote
+    (exwm xelb theme-changer sunshine srefactor dockerfile-mode docker tablist docker-tramp spotify helm-spotify-plus multi mu4e-maildirs-extension mu4e-alert helm-mu github-search github-clone gist gh marshal logito forge ghub closql emacsql-sqlite emacsql treepy helm-w3m w3m web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data gmail-message-mode ham-mode html-to-markdown flymd edit-server helm-rtags google-c-style flycheck-rtags disaster cquery cpp-auto-include company-rtags rtags company-c-headers clang-format ccls dap-mode bui tree-mode mvn meghanada maven-test-mode lsp-java groovy-mode groovy-imports pcache gradle-mode ensime sbt-mode scala-mode company-emacs-eclim eclim yapfify stickyfunc-enhance pytest pyenv-mode py-isort pippel pipenv pyvenv pip-requirements lsp-python-ms python lsp-mode dash-functional live-py-mode importmagic epc ctable concurrent deferred helm-pydoc helm-gtags helm-cscope xcscope ggtags cython-mode counsel-gtags company-anaconda blacken anaconda-mode pythonic flyspell-correct-helm flyspell-correct auto-dictionary yasnippet-snippets xterm-color unfill smeargle shell-pop orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-cliplink org-brain mwim multi-term mmm-mode markdown-toc markdown-mode magit-svn magit-gitflow magit-popup htmlize helm-org-rifle helm-gitignore helm-git-grep helm-company helm-c-yasnippet gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flycheck-pos-tip pos-tip evil-org evil-magit magit transient git-commit with-editor eshell-z eshell-prompt-extras esh-help diff-hl company-statistics company browse-at-remote auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+)
