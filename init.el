@@ -491,6 +491,10 @@ before packages are loaded."
   (load-file "~/.spacemacs.d/email-config.el")
   (config-the-email)
   ;;for email
+  ;;config the browser in emacs
+  (load-file "~/.spacemacs.d/my-browser-config.el")
+  (config-my-browser)
+  ;;config the browser in emacs
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
