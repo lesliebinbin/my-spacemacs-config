@@ -2,3 +2,4 @@
 ** This is my spacemacs configuration
    Will keep modifying, cheers.
 ** Mgit is awesome.
+** Haha in here.
