@@ -1,3 +1,3 @@
-  (start-process "leslie" "binbin" "syndaemon" "-i" "4" "-d" "-t" "-K")
-  ;;(require 'exwm-systemtray)
-  ;;(exwm-systemtray-enable)
+;; (require 'exwm-systemtray)
+;; (exwm-systemtray-enable)
+;; (run-at-time "2 min 30 sec" 1 'start-process-shell-command "leslie" "binbin" "lxpanel")

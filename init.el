@@ -29,7 +29,7 @@ This function should only modify configuration layer settings."
          yaml
          javascript
          html
-         (clojure :variables clojure-backend 'lsp)
+         clojure
          (python :variables
                  python-backend 'lsp
                  python-fill-column 99
@@ -41,15 +41,18 @@ This function should only modify configuration layer settings."
          (c-c++ :variables
                 c-c++-default-mode-headers 'c++-mode
                 c-c++-enable-clang-support t
-                c-c++-backend 'lsp)
+                c-c++-backend 'lsp-clangd)
          emacs-lisp
+	       (ruby :variables ruby-backend 'lsp)
+         kotlin
+	       (scala :variables scala-backend 'lsp)
          ;; ----------------------------------------------------------------
          ;; Example of useful layers you may want to use right away.
          ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
          ;; `M-m f e R' (Emacs style) to install them.
          ;; ----------------------------------------------------------------
          (auto-completion :variables
-                          auto-completion-enable-snippets-in-popup nil
+                         auto-completion-enable-snippets-in-popup nil
                           auto-completion-enable-help-tooltip t
                           auto-completion-enable-sort-by-usage t)
          better-defaults
@@ -58,6 +61,7 @@ This function should only modify configuration layer settings."
          github
          helm
          markdown
+         (cmake :variables cmake-enable-cmake-ide-support t)
          (latex :variables
                 latex-enable-auto-fill t
                 latex-enable-folding t)
@@ -69,6 +73,7 @@ This function should only modify configuration layer settings."
                 shell-default-position 'bottom)
          spell-checking
          syntax-checking
+         ipython-notebook
          treemacs
          version-control
          docker
@@ -150,7 +155,7 @@ It should only modify the values of Spacemacs settings."
    ;; a locked version of packages. If nil then Spacemacs will install the
    ;; latest version of packages from MELPA. (default nil)
    dotspacemacs-use-spacelpa
-   nil
+   t
    ;; If non-nil then verify the signature for downloaded Spacelpa archives.
    ;; (default nil)
    dotspacemacs-verify-spacelpa-archives
@@ -184,7 +189,7 @@ It should only modify the values of Spacemacs settings."
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
    dotspacemacs-startup-banner
-   'official
+   'random
    ;; List of items to show in startup buffer or an association list of
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
    ;; Possible values for list-type are:
@@ -470,7 +475,10 @@ See the header of this file for more information."
 This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
-If you are unsure, try setting them in `dotspacemacs/user-config' first.")
+If you are unsure, try setting them in `dotspacemacs/user-config' first."
+(setq configuration-layer-elpa-archives '(("melpa" . "melpa.org/packages/")  
+					  ("org" . "orgmode.org/elpa/") ("gnu" . "elpa.gnu.org/packages/")))      
+)
 
 (defun dotspacemacs/user-load ()
   "Library to load while dumping.
@@ -543,7 +551,7 @@ This function is called at the very end of Spacemacs initialization."
  '(org-agenda-files (quote ("~/Desktop/uq_courses/deco7140/myweb/README.org")))
  '(package-selected-packages
    (quote
-    (company-quickhelp pyim pyim-basedict pangu-spacing find-by-pinyin-dired chinese-conv ace-pinyin pinyinlib exwm xelb theme-changer sunshine srefactor dockerfile-mode docker tablist docker-tramp spotify helm-spotify-plus multi mu4e-maildirs-extension mu4e-alert helm-mu github-search github-clone gist gh marshal logito forge ghub closql emacsql-sqlite emacsql treepy helm-w3m w3m web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data gmail-message-mode ham-mode html-to-markdown flymd edit-server helm-rtags google-c-style flycheck-rtags disaster cquery cpp-auto-include company-rtags rtags company-c-headers clang-format ccls dap-mode bui tree-mode mvn meghanada maven-test-mode lsp-java groovy-mode groovy-imports pcache gradle-mode ensime sbt-mode scala-mode company-emacs-eclim eclim yapfify stickyfunc-enhance pytest pyenv-mode py-isort pippel pipenv pyvenv pip-requirements lsp-python-ms python lsp-mode dash-functional live-py-mode importmagic epc ctable concurrent deferred helm-pydoc helm-gtags helm-cscope xcscope ggtags cython-mode counsel-gtags company-anaconda blacken anaconda-mode pythonic flyspell-correct-helm flyspell-correct auto-dictionary yasnippet-snippets xterm-color unfill smeargle shell-pop orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-cliplink org-brain mwim multi-term mmm-mode markdown-toc markdown-mode magit-svn magit-gitflow magit-popup htmlize helm-org-rifle helm-gitignore helm-git-grep helm-company helm-c-yasnippet gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flycheck-pos-tip pos-tip evil-org evil-magit magit transient git-commit with-editor eshell-z eshell-prompt-extras esh-help diff-hl company-statistics company browse-at-remote auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line)))
+    (ob-ipython ein polymode websocket helm-ctest cmake-mode cmake-ide levenshtein kotlin-mode flycheck-kotlin company-quickhelp pyim pyim-basedict pangu-spacing find-by-pinyin-dired chinese-conv ace-pinyin pinyinlib exwm xelb theme-changer sunshine srefactor dockerfile-mode docker tablist docker-tramp spotify helm-spotify-plus multi mu4e-maildirs-extension mu4e-alert helm-mu github-search github-clone gist gh marshal logito forge ghub closql emacsql-sqlite emacsql treepy helm-w3m w3m web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data gmail-message-mode ham-mode html-to-markdown flymd edit-server helm-rtags google-c-style flycheck-rtags disaster cquery cpp-auto-include company-rtags rtags company-c-headers clang-format ccls dap-mode bui tree-mode mvn meghanada maven-test-mode lsp-java groovy-mode groovy-imports pcache gradle-mode ensime sbt-mode scala-mode company-emacs-eclim eclim yapfify stickyfunc-enhance pytest pyenv-mode py-isort pippel pipenv pyvenv pip-requirements lsp-python-ms python lsp-mode dash-functional live-py-mode importmagic epc ctable concurrent deferred helm-pydoc helm-gtags helm-cscope xcscope ggtags cython-mode counsel-gtags company-anaconda blacken anaconda-mode pythonic flyspell-correct-helm flyspell-correct auto-dictionary yasnippet-snippets xterm-color unfill smeargle shell-pop orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-cliplink org-brain mwim multi-term mmm-mode markdown-toc markdown-mode magit-svn magit-gitflow magit-popup htmlize helm-org-rifle helm-gitignore helm-git-grep helm-company helm-c-yasnippet gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flycheck-pos-tip pos-tip evil-org evil-magit magit transient git-commit with-editor eshell-z eshell-prompt-extras esh-help diff-hl company-statistics company browse-at-remote auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line)))
  '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
