@@ -32,6 +32,7 @@ This function should only modify configuration layer settings."
                      javascript-import-tool 'import-js
                      javascript-backend 'lsp
                      javascript-fmt-tool 'prettier
+                     javascript-fmt-on-save t
                      node-add-modules-path t
                      js2-include-node-externs t)
          html
@@ -46,8 +47,11 @@ This function should only modify configuration layer settings."
          (java :variables java-backend 'lsp)
          (c-c++ :variables
                 c-c++-default-mode-headers 'c++-mode
-                ;;c-c++-enable-clang-support t
-                c-c++-backend 'lsp-clangd)
+                c-c++-enable-clang-support t
+                c-c++-backend 'lsp-clangd
+		c++-enable-organize-includes-on-save t
+		c-c++-enable-clang-format-on-save t
+		)
 	       common-lisp
          (semantic :enable-for emacs-lisp)
 	       (ruby :variables ruby-backend 'lsp)
