@@ -4,3 +4,5 @@
     (add-hook 'python-mode-hook
               (lambda ()
                 (setq python-shell-interpreter "python3")))))
+
+(setq python-auto-set-local-pyvenv-virtualenv "on-project-switch")

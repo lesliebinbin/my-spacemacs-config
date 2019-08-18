@@ -28,120 +28,125 @@ This function should only modify configuration layer settings."
    '(sql
      lsp
      dap
-         yaml
-         (javascript :variables
-                     javascript-import-tool 'import-js
-                     javascript-backend 'lsp
-                     javascript-fmt-tool 'prettier
-                     javascript-fmt-on-save t
-                     node-add-modules-path t
-                     js2-include-node-externs t)
-         html
-         clojure
-         (python :variables
-                 python-backend 'lsp
-                 python-fill-column 99
-                 python-formatter 'yapf
-                 python-format-on-save t
-                 python-sort-imports-on-save t
-                 python-pipenv-activate t)
-         (java :variables java-backend 'lsp)
-         (c-c++ :variables
-                c-c++-default-mode-headers 'c++-mode
-                ;; the configuration using cquery or ccls
-                ;; c-c++-lsp-executable (file-truename "~/Desktop/cquery_haha/bin/cquery")
-                c-c++-lsp-executable (file-truename "~/Desktop/codes_from_github/ccls/Release/ccls")
-                c-c++-backend 'lsp-ccls
-                c-c++-adopt-subprojects t
-                c-c++-lsp-sem-highlight-rainbow t
-                ;; the configuration using cquery or ccls
-                ;; the configuration of clangd perhaps
-                ;; c-c++-backend 'lsp-clangd
-                ;; c-c++-lsp-executable (file-truename "/usr/bin/clangd-8")
-                ;; c-c++-enable-clang-support t
-                ;; the configuration of clangd perhaps
-                c++-enable-organize-includes-on-save t
-                c-c++-enable-clang-format-on-save t
-                c-c++-enable-google-style t
-                c-c++-enable-google-newline t
-                c-c++-enable-auto-newline t
-		)
-	       common-lisp
-         (semantic :enable-for emacs-lisp)
-         (ruby :variables ruby-backend 'lsp)
-         kotlin
-	       (scala :variables scala-backend 'lsp)
-         asm
-         (go :variables
-             go-backend 'lsp
-             go-tab-width 4
-             go-use-gometalinter t
-             gofmt-command "goimports"
+     yaml
+     (javascript :variables
+                 javascript-import-tool 'import-js
+                 javascript-backend 'lsp
+                 javascript-fmt-tool 'prettier
+                 javascript-fmt-on-save t
+                 node-add-modules-path t
+                 js2-include-node-externs t)
+     html
+     clojure
+     (python :variables
+             python-backend 'lsp
+             python-fill-column 99
+             python-formatter 'yapf
+             python-format-on-save t
+             python-sort-imports-on-save t
+             python-pipenv-activate nil
              )
-         hy
-         (typescript :variables
-                     typescript-fmt-on-save t
-                     typescript-linter 'tslint
-                     typescript-backend 'lsp
-                     )
-         (rust :variables rust-backend 'lsp rust-format-on-save t)
-         ;; ----------------------------------------------------------------
-         ;; Example of useful layers you may want to use right away.
-         ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
-         ;; `M-m f e R' (Emacs style) to install them.
-         ;; ----------------------------------------------------------------
-         (auto-completion :variables
-                         auto-completion-enable-snippets-in-popup t
-                          auto-completion-enable-help-tooltip t
-                          auto-completion-enable-sort-by-usage t)
-         (ess :variables ess-enable-smart-equals t)
-         ;; ess
-         react
-         better-defaults
-         emacs-lisp
-         git
-         github
-         helm
-         markdown
-         (cmake :variables cmake-enable-cmake-ide-support t)
-         (latex :variables
-                latex-enable-auto-fill t
-                latex-enable-folding t)
-         bibtex
-         multiple-cursors
-         org
-         (shell :variables
-                shell-default-height 30
-                shell-default-term-shell "/bin/zsh"
-                shell-default-position 'bottom)
-         spell-checking
-         syntax-checking
-         ipython-notebook
-         treemacs
-         version-control
-         docker
-	 vagrant
-   nginx
-         pdf
-         chrome
-         ;; mu4e
-         (geolocation :variables
-                      geolocation-enable-location-service t
-                      geolocation-enable-weather-forecast t)
-         exwm
-         spotify
-         tmux
-         chinese
-         ;;multiple-cursors
-         multiple-cursors
-         ;;multiple-cursors
-         ;;pandoc
-         pandoc
-         ;;pandoc
-         ;;games
-         games
-         ;;games
-	 )
+     (java :variables java-backend 'lsp)
+     (c-c++ :variables
+            c-c++-default-mode-headers 'c++-mode
+            ;; the configuration using cquery or ccls
+            ;; c-c++-lsp-executable (file-truename "~/Desktop/cquery_haha/bin/cquery")
+            c-c++-lsp-executable (file-truename "~/Desktop/codes_from_github/ccls/Release/ccls")
+            c-c++-backend 'lsp-ccls
+            c-c++-adopt-subprojects t
+            c-c++-lsp-sem-highlight-rainbow t
+            ;; the configuration using cquery or ccls
+            ;; the configuration of clangd perhaps
+            ;; c-c++-backend 'lsp-clangd
+            ;; c-c++-lsp-executable (file-truename "/usr/bin/clangd-8")
+            ;; c-c++-enable-clang-support t
+            ;; the configuration of clangd perhaps
+            c++-enable-organize-includes-on-save t
+            c-c++-enable-clang-format-on-save t
+            c-c++-enable-google-style t
+            c-c++-enable-google-newline t
+            c-c++-enable-auto-newline t
+            )
+     common-lisp
+     (semantic :enable-for emacs-lisp)
+     (ruby :variables ruby-backend 'lsp)
+     kotlin
+     (scala :variables scala-backend 'lsp)
+     asm
+     (go :variables
+         go-backend 'lsp
+         go-tab-width 4
+         go-use-gometalinter t
+         gofmt-command "goimports"
+         )
+     hy
+     (typescript :variables
+                 typescript-fmt-on-save t
+                 typescript-linter 'tslint
+                 typescript-backend 'lsp
+                 )
+     (rust :variables rust-backend 'lsp rust-format-on-save t)
+     ;; ----------------------------------------------------------------
+     ;; Example of useful layers you may want to use right away.
+     ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
+     ;; `M-m f e R' (Emacs style) to install them.
+     ;; ----------------------------------------------------------------
+     (auto-completion :variables
+                      auto-completion-enable-snippets-in-popup t
+                      auto-completion-enable-help-tooltip t
+                      auto-completion-enable-sort-by-usage t)
+     (ess :variables ess-enable-smart-equals t)
+     ;; ess
+     react
+     better-defaults
+     emacs-lisp
+     git
+     github
+     ;; (helm :variables helm-enable-auto-resize t)
+     (ivy :variables ivy-enable-advanced-buffer-information t)
+     (markdown :variables markdown-live-preview-engine 'vmd markdown-mmm-auto-modes '("c" "c++" "scala" ("elisp" "emacs-lisp")))
+     (cmake :variables cmake-enable-cmake-ide-support t)
+     (latex :variables
+            latex-enable-auto-fill t
+            latex-enable-folding t)
+     bibtex
+     multiple-cursors
+     org
+     (shell :variables
+            shell-default-height 30
+            shell-default-term-shell "/bin/zsh"
+            shell-default-position 'bottom)
+     spell-checking
+     syntax-checking
+     ipython-notebook
+     treemacs
+     version-control
+     docker
+     vagrant
+     nginx
+     pdf
+     ;;chrome
+     ;; mu4e
+     (geolocation :variables
+                  geolocation-enable-location-service t
+                  geolocation-enable-weather-forecast t)
+     exwm
+     spotify
+     tmux
+     chinese
+     ;;multiple-cursors
+     multiple-cursors
+     ;;multiple-cursors
+     ;;pandoc
+     pandoc
+     ;;pandoc
+     ;;games
+     games
+     ;;games
+     ;;google-translate
+     spacemacs-language
+     ;;google-translate
+     )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
@@ -152,8 +157,21 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages
    '(
      latex-preview-pane
-     sokoban
+     ;;sokoban
      atomic-chrome
+     dracula-theme
+     ;;exwm
+     ;;xelb
+     ;;(helm-company
+      ;;:location (recipe
+       ;;          :fetcher github
+        ;;         :repo "Sodel-the-Vociferous/helm-company"
+         ;;        :commit "74ff4d0b99cc890aeb62723c086679e056092bf2"))
+     ;;(helm
+      ;; location (recipe
+       ;;           :fetcher github
+        ;;          :repo "emacs-helm/heml"
+         ;;         :commit "caaf1a9d306fa3b57a78b262ea665cc7f0019d65"))
      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages
@@ -200,6 +218,8 @@ It should only modify the values of Spacemacs settings."
    ;; (default t) dotspacemacs-elpa-https t
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    ;; (default 5)
+   dotspacemacs-elpa-https
+   nil
    dotspacemacs-elpa-timeout
    5
    ;; Set `gc-cons-threshold' and `gc-cons-percentage' when startup finishes.
@@ -212,7 +232,7 @@ It should only modify the values of Spacemacs settings."
    ;; a locked version of packages. If nil then Spacemacs will install the
    ;; latest version of packages from MELPA. (default nil)
    dotspacemacs-use-spacelpa
-   t
+   nil
    ;; If non-nil then verify the signature for downloaded Spacelpa archives.
    ;; (default nil)
    dotspacemacs-verify-spacelpa-archives
@@ -275,7 +295,7 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes
-   '(spacemacs-dark spacemacs-light)
+   '(dracula spacemacs-dark spacemacs-light)
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
    ;; first three are spaceline themes. `doom' is the doom-emacs mode-line.
@@ -533,9 +553,9 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
-(setq configuration-layer-elpa-archives '(("melpa" . "melpa.org/packages/")  
-					  ("org" . "orgmode.org/elpa/") ("gnu" . "elpa.gnu.org/packages/")))      
-)
+  (setq configuration-layer-elpa-archives '(("melpa" . "melpa.org/packages/")  
+                                            ("org" . "orgmode.org/elpa/") ("gnu" . "elpa.gnu.org/packages/")))      
+  )
 
 (defun dotspacemacs/user-load ()
   "Library to load while dumping.
@@ -581,11 +601,11 @@ before packages are loaded."
   (load-file "~/.spacemacs.d/my-browser-config.el")
   (config-my-browser)
   ;;config the browser in emacs
- ;;enable exwm-systemtray
+  ;;enable exwm-systemtray
   ;;(exwm-enable)
   (setq exwm-workspace-number 4)
-  ;;(autoload 'exwm-enable "my-exwm-gnome-config.el")
-  (load-file "~/.spacemacs.d/my-exwm-gnome-config.el")
+  ;;(load-file "~/.spacemacs.d/my-exwm-gnome-config.el")
+  (load-file "/root/.spacemacs.d/my-exwm-gnome-config.el")
   ;;(require 'exwm-systemtray)
   ;;(exwm-systemtray-enable)
   ;;(load-file "~/.spacemacs.d/my-exwm-keybinding-extra-config.el")
@@ -616,9 +636,12 @@ before packages are loaded."
   (config-my-git)
   ;;config git and svn
   ;;config python
-  ;; (load-file "~/.spacemacs.d/my-python-config.el")
-  ;; (config-my-python)
+  (load-file "~/.spacemacs.d/my-python-config.el")
+  (config-my-python)
   ;;config python
+  ;;google translate config;
+  (setq google-translate-backend-method 'curl)
+  ;;google translate config;
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -633,24 +656,32 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files (quote ("~/Desktop/uq_courses/deco7140/myweb/README.org")))
+ '(ansi-color-names-vector
+   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
  '(package-selected-packages
    (quote
-    (sqlup-mode sql-indent sokoban auctex-lua auctex-latexmk ess-R-data-view ess julia-mode org-ref key-chord helm-bibtex parsebib biblio biblio-core nginx-mode tide typescript-mode add-node-modules-path rjsx-mode toml-mode racer flycheck-rust cargo rust-mode ob-hy hy-mode flycheck-gometalinter godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc company-go go-mode x86-lookup nasm-mode lsp-intellij ob-ipython ein polymode websocket helm-ctest cmake-mode cmake-ide levenshtein kotlin-mode flycheck-kotlin company-quickhelp pyim pyim-basedict pangu-spacing find-by-pinyin-dired chinese-conv ace-pinyin pinyinlib exwm xelb theme-changer sunshine srefactor dockerfile-mode docker tablist docker-tramp spotify helm-spotify-plus multi mu4e-maildirs-extension mu4e-alert helm-mu github-search github-clone gist gh marshal logito forge ghub closql emacsql-sqlite emacsql treepy helm-w3m w3m web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data gmail-message-mode ham-mode html-to-markdown flymd edit-server helm-rtags google-c-style flycheck-rtags disaster cquery cpp-auto-include company-rtags rtags company-c-headers clang-format ccls dap-mode bui tree-mode mvn meghanada maven-test-mode lsp-java groovy-mode groovy-imports pcache gradle-mode ensime sbt-mode scala-mode company-emacs-eclim eclim yapfify stickyfunc-enhance pytest pyenv-mode py-isort pippel pipenv pyvenv pip-requirements lsp-python-ms python lsp-mode dash-functional live-py-mode importmagic epc ctable concurrent deferred helm-pydoc helm-gtags helm-cscope xcscope ggtags cython-mode counsel-gtags company-anaconda blacken anaconda-mode pythonic flyspell-correct-helm flyspell-correct auto-dictionary yasnippet-snippets xterm-color unfill smeargle shell-pop orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-cliplink org-brain mwim multi-term mmm-mode markdown-toc markdown-mode magit-svn magit-gitflow magit-popup htmlize helm-org-rifle helm-gitignore helm-git-grep helm-company helm-c-yasnippet gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flycheck-pos-tip pos-tip evil-org evil-magit magit transient git-commit with-editor eshell-z eshell-prompt-extras esh-help diff-hl company-statistics company browse-at-remote auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line)))
- '(paradox-github-token t)
- '(safe-local-variable-values
-   (quote
-    ((typescript-backend . tide)
-     (typescript-backend . lsp)
-     (javascript-backend . tern)
-     (javascript-backend . lsp)
-     (go-backend . go-mode)
-     (go-backend . lsp)))))
+    (wgrep smex ivy-yasnippet ivy-xref ivy-rtags ivy-rich ivy-purpose ivy-hydra flyspell-correct-ivy counsel-spotify counsel-projectile counsel-css counsel swiper paradox clj-refactor inflections edn paredit cider sesman exwm evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state iedit evil-exchange evil-ediff evil-args evil-anzu anzu evil goto-chg company-auctex auctex-latexmk yapfify yaml-mode xterm-color x86-lookup ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe vagrant-tramp vagrant uuidgen use-package unfill typit mmt toml-mode toc-org tide typescript-mode theme-changer tagedit sunshine sudoku stickyfunc-enhance srefactor sql-indent spotify spaceline powerline sokoban smeargle smartparens slime-company slime slim-mode shell-pop scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe restart-emacs rbenv rase rake rainbow-delimiters racer pyvenv pytest pyim pyim-basedict pyenv-mode py-isort pug-mode popwin pip-requirements persp-mode pcre2el spinner pangu-spacing pandoc-mode pacmacs ox-pandoc osx-location orgit org-ref pdf-tools key-chord ivy org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file noflet nginx-mode neotree nasm-mode mwim multi-term move-text mmm-mode minitest markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint latex-preview-pane js2-refactor multiple-cursors js-doc indent-guide hydra hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-spotify-plus multi helm-pydoc helm-projectile projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-bibtex parsebib helm-ag haml-mode google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode github-search github-clone magit github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh marshal logito pcache ht gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-rust flycheck-pos-tip flycheck-gometalinter flycheck flx-ido flx find-by-pinyin-dired fill-column-indicator fancy-battery eyebrowse xelb expand-region exec-path-from-shell evil-unimpaired evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter transient git-commit with-editor evil-escape undo-tree ess-smart-equals ess-R-data-view ctable ess julia-mode eshell-z eshell-prompt-extras esh-help ensime sbt-mode scala-mode emmet-mode elisp-slime-nav ein skewer-mode polymode deferred request js2-mode simple-httpd dumb-jump dockerfile-mode docker json-mode tablist magit-popup docker-tramp json-snatcher json-reformat disaster diminish diff-hl define-word cython-mode company-web web-completion-data company-tern dash-functional tern company-statistics company-quickhelp pos-tip company-go go-mode company-emacs-eclim eclim company-c-headers company-anaconda company common-lisp-snippets column-enforce-mode coffee-mode cmake-mode clojure-snippets peg lv clean-aindent-mode clang-format cider-eval-sexp-fu eval-sexp-fu queue pkg-info parseedn clojure-mode parseclj a epl chruby cargo markdown-mode rust-mode bundler inf-ruby bind-map bind-key biblio biblio-core auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed auctex atomic-chrome websocket anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-pinyin pinyinlib ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup 2048-game dracula-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((((min-colors 16777216)) (:background "#282a36" :foreground "#f8f8f2")) (t (:background "#000000" :foreground "#f8f8f2")))))
 )
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
+ '(package-selected-packages
+   (quote
+    (paradox clj-refactor inflections edn paredit cider sesman exwm evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state iedit evil-exchange evil-ediff evil-args evil-anzu anzu evil goto-chg company-auctex auctex-latexmk yapfify yaml-mode xterm-color x86-lookup ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vi-tilde-fringe vagrant-tramp vagrant uuidgen use-package unfill typit mmt toml-mode toc-org tide typescript-mode theme-changer tagedit sunshine sudoku stickyfunc-enhance srefactor sql-indent spotify spaceline powerline sokoban smeargle smartparens slime-company slime slim-mode shell-pop scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe restart-emacs rbenv rase rake rainbow-delimiters racer pyvenv pytest pyim pyim-basedict pyenv-mode py-isort pug-mode popwin pip-requirements persp-mode pcre2el spinner pangu-spacing pandoc-mode pacmacs ox-pandoc osx-location orgit org-ref pdf-tools key-chord ivy org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file noflet nginx-mode neotree nasm-mode mwim multi-term move-text mmm-mode minitest markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint latex-preview-pane js2-refactor multiple-cursors js-doc indent-guide hydra hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-spotify-plus multi helm-pydoc helm-projectile projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-bibtex parsebib helm-ag haml-mode google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode github-search github-clone magit github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh marshal logito pcache ht gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-rust flycheck-pos-tip flycheck-gometalinter flycheck flx-ido flx find-by-pinyin-dired fill-column-indicator fancy-battery eyebrowse xelb expand-region exec-path-from-shell evil-unimpaired evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter transient git-commit with-editor evil-escape undo-tree ess-smart-equals ess-R-data-view ctable ess julia-mode eshell-z eshell-prompt-extras esh-help ensime sbt-mode scala-mode emmet-mode elisp-slime-nav ein skewer-mode polymode deferred request js2-mode simple-httpd dumb-jump dockerfile-mode docker json-mode tablist magit-popup docker-tramp json-snatcher json-reformat disaster diminish diff-hl define-word cython-mode company-web web-completion-data company-tern dash-functional tern company-statistics company-quickhelp pos-tip company-go go-mode company-emacs-eclim eclim company-c-headers company-anaconda company common-lisp-snippets column-enforce-mode coffee-mode cmake-mode clojure-snippets peg lv clean-aindent-mode clang-format cider-eval-sexp-fu eval-sexp-fu queue pkg-info parseedn clojure-mode parseclj a epl chruby cargo markdown-mode rust-mode bundler inf-ruby bind-map bind-key biblio biblio-core auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed auctex atomic-chrome websocket anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-pinyin pinyinlib ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup 2048-game dracula-theme))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((((min-colors 16777216)) (:background "#282a36" :foreground "#f8f8f2")) (t (:background "#000000" :foreground "#f8f8f2")))))
