@@ -39,7 +39,7 @@ This function should only modify configuration layer settings."
      html
      clojure
      (python :variables
-             python-backend 'lsp
+             ;; python-backend 'lsp
              python-fill-column 99
              python-formatter 'yapf
              python-format-on-save t
@@ -68,8 +68,10 @@ This function should only modify configuration layer settings."
             c-c++-enable-auto-newline t
             )
      common-lisp
-     (semantic :enable-for emacs-lisp)
-     (ruby :variables ruby-backend 'lsp)
+     ;;(semantic :enable-for emacs-lisp)
+     semantic
+     ;; (ruby :variables ruby-backend 'lsp)
+     ruby
      kotlin
      (scala :variables scala-backend 'lsp)
      asm
@@ -133,7 +135,7 @@ This function should only modify configuration layer settings."
      exwm
      spotify
      tmux
-     chinese
+     ;; chinese
      ;;multiple-cursors
      multiple-cursors
      ;;multiple-cursors
@@ -146,6 +148,7 @@ This function should only modify configuration layer settings."
      ;;google-translate
      spacemacs-language
      ;;google-translate
+     (ranger :variables ranger-show-preview t)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -156,7 +159,7 @@ This function should only modify configuration layer settings."
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages
    '(
-     latex-preview-pane
+     ;; latex-preview-pane
      ;;sokoban
      atomic-chrome
      dracula-theme
@@ -642,6 +645,10 @@ before packages are loaded."
   ;;google translate config;
   (setq google-translate-backend-method 'curl)
   ;;google translate config;
+  ;;config mosh for tramp
+  ;; (load-file "~/.spacemacs.d/my-mosh-config.el")
+  ;; (config-my-mosh)
+  ;;config mosh for tramp
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
