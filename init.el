@@ -71,6 +71,7 @@ This function should only modify configuration layer settings."
      ;;(semantic :enable-for emacs-lisp)
      semantic
      ;; (ruby :variables ruby-backend 'lsp)
+     ;; I think ruby lsp got some problem.
      ruby
      kotlin
      (scala :variables scala-backend 'lsp)
