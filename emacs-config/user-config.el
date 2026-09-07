@@ -44,13 +44,3 @@ before packages are loaded."
    "user-config/jupyter-eval.org")
   (custom/spacemacs-load-user-custom-via-org
    "user-config/remote-tramp.org"))
-  ;; origami.el freezes `(face-attribute 'highlight :background)` into its
-  ;; origami-fold-header-face defface at load time.  When origami loads
-  ;; before the theme applies, that freezes `unspecified` into the :box spec,
-  ;; and creating any later frame (e.g. the company completion popup via
-  ;; posframe) fails with "Invalid face box".  Re-register the face with a
-  ;; concrete spec (see origami.el `defface origami-fold-header-face`).
-  (let ((bg (or (face-background 'highlight) "grey70")))
-    (custom-set-faces
-     `(origami-fold-header-face ((t (:box (:line-width 1 :color ,bg)
-                                          :background ,bg))))))
