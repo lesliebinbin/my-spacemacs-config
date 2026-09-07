@@ -14,6 +14,9 @@ Do not place automatic activation rules here; those belong in a skill.
 
 ## Available runbooks
 
+- [`fork-patch-emacs-package.md`](fork-patch-emacs-package.md): fork, patch,
+  compile-test with `eldev`, and wire unmaintained Emacs packages into
+  Spacemacs via Quelpa recipes.
 - [`scikit-build-cuda-extension.md`](scikit-build-cuda-extension.md): bootstrap
   a library-first Python package with CMake, CUDA, and separate pybind11
   training and inference modules.

@@ -21,3 +21,12 @@ the task explicitly requires that behavior.
 Preserve unrelated agent assets when adding or updating a skill. Treat
 translated skill files as separate maintained documents unless their skill
 explicitly defines another synchronization policy.
+
+# Parent repository (.emacs.d) guidelines
+
+The parent `.emacs.d` repository is a fork of official Spacemacs. To ensure
+clean upstream synchronization:
+- Never touch the root `README.md` in `.emacs.d`.
+- Any documentation or notes for `.emacs.d` must go into `README-additional.org`
+  (Org format) in `.emacs.d`.
+
