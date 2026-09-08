@@ -1,0 +1,5 @@
+# Changes to this file will be overwritten by Copier.
+_commit: 39a3074
+_src_path: git@github.com:lesliebinbin/mise-blueprints.git
+description: A mise-managed Emacs native module written in C++20
+module_name: emacs-rpc-bridge

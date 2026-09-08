@@ -1,0 +1,68 @@
+#+title: emacs-rpc-bridge
+
+A mise-managed Emacs native module written in C++20
+
+A C++20 Emacs native module built with CMake and managed with mise.  As a
+worked example it registers two ordinary Lisp functions from C++:
+=emacs-rpc-bridge-hello= (no arguments) and =emacs-rpc-bridge-shout=
+(one string argument, returned in upper case).
+
+* Requirements
+
+- Emacs with native module support and the matching =emacs-module.h= header
+- CMake 3.16 or newer and a C++20 compiler
+- mise
+
+* Build and check
+
+#+begin_src shell
+mise build    # configure + compile -> build/libemacs-rpc-bridge.so
+mise check    # build, then load the module in Emacs batch mode as a smoke test
+#+end_src
+
+If you drive CMake directly instead of mise, the bundled =CMakePresets.json=
+reproduces the same configuration (build directory =build/=, Debug build
+type) without typing the flags:
+
+#+begin_src shell
+cmake --list-presets            # list available presets
+cmake --preset default          # configure
+cmake --build --preset default  # compile -> build/libemacs-rpc-bridge.so
+#+end_src
+
+Presets require CMake 3.21 or newer; the plain =cmake -S . -B build=
+commands in =mise.toml= work from CMake 3.16.  Both entry points write to the
+same =build/= directory.
+
+* Load into Emacs
+
+Loading and wrapping the module is up to you.  The minimal form works from
+any Lisp code (init file, =M-x eval-expression=):
+
+#+begin_src elisp
+(module-load "/absolute/path/to/build/libemacs-rpc-bridge.so")
+#+end_src
+
+After that, the functions registered by the module are first-class Lisp
+functions: call them directly, advise them, or define interactive commands on
+top of them.  The module is a plain shared library — no packaging or autoload
+step involved.  To drop it into an Emacs extension library directory:
+
+#+begin_src shell
+cmake --install build --prefix /your/extension/lib-dir
+#+end_src
+
+* Anatomy of =src/module.cpp=
+
+When you add real functionality, only three things are involved:
+
+- Write a callback with the shape
+  =emacs_value (emacs_env *env, ptrdiff_t nargs, emacs_value args[],
+  void *data)=.
+- Convert arguments and results with the module API helpers (the file shows
+  the string round-trip with =make_string= and =copy_string_contents=).
+- Register it in =emacs_module_init= with =defun= and =env->make_function=,
+  which fixes its name and argument count.
+
+=emacs_module_init= is the only entry point Emacs calls, and
+=plugin_is_GPL_compatible= must exist for the module to be accepted.

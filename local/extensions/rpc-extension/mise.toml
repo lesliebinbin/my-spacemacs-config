@@ -1,0 +1,16 @@
+# CMake, a C++20 compiler, and an Emacs built with native module support are
+# external prerequisites (see README.org); this file only drives them.
+
+[tasks.configure]
+description = "Configure the CMake build directory"
+run = "cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug"
+
+[tasks.build]
+description = "Compile the native module into build/"
+depends = ["configure"]
+run = "cmake --build build"
+
+[tasks.check]
+description = "Build, then smoke-test the module in Emacs batch mode"
+depends = ["build"]
+run = 'emacs -Q --batch --eval "(progn (module-load (expand-file-name (concat \"build/libemacs-rpc-bridge\" module-file-suffix))) (unless (fboundp (quote emacs-rpc-bridge-hello)) (kill-emacs 1)) (princ (emacs-rpc-bridge-hello)) (terpri)))"'
