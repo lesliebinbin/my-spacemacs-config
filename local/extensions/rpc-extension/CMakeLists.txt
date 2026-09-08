@@ -24,9 +24,19 @@ endif()
 # ---------------------------------------------------------------------------
 # MODULE (not SHARED): Emacs dlopens the built file directly, so the library
 # needs no link dependency of its own (per runbook/emacs-rpc-bridge/design-001).
-add_library(emacs-rpc-bridge MODULE src/module.cpp)
+find_package(Threads REQUIRED)
+
+add_library(emacs-rpc-bridge MODULE
+  src/module.cpp
+  src/server.cpp
+  src/dispatch.cpp
+  src/handles.cpp)
 target_include_directories(emacs-rpc-bridge PRIVATE "${EMACS_MODULE_INCLUDE_DIR}")
 target_compile_options(emacs-rpc-bridge PRIVATE -Wall -Wextra)
+# gRPC / protobuf / absl are static (installed into $HOME/local), so this
+# dlopened MODULE pulls them in and must link position-independently.
+target_link_libraries(emacs-rpc-bridge PRIVATE rpc_bridge_proto
+                      Threads::Threads)
 
 # Emacs has no install convention of its own.  Either load the built file
 # directly (build/libemacs-rpc-bridge.so) with module-load, or install it
@@ -75,9 +85,12 @@ add_custom_command(
 )
 
 # Generated code only — a hand edit here is overwritten on the next build.
+# PIC: this static library is linked into the dlopened MODULE library
+# (emacs-rpc-bridge) below.
 add_library(rpc_bridge_proto STATIC
   "${GEN_DIR}/emacs_rpc.pb.cc"
   "${GEN_DIR}/emacs_rpc.grpc.pb.cc")
+set_target_properties(rpc_bridge_proto PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(rpc_bridge_proto PUBLIC "${GEN_DIR}")
 target_link_libraries(rpc_bridge_proto PUBLIC gRPC::grpc++)
 
@@ -88,3 +101,17 @@ target_link_libraries(codegen_smoke PRIVATE rpc_bridge_proto)
 
 enable_testing()
 add_test(NAME codegen_smoke COMMAND codegen_smoke)
+
+# ---------------------------------------------------------------------------
+# Integration harness (TODO 3 acceptance): end-to-end dispatch + object
+# lifetime over the real Unix socket.  The test spawns its own batch Emacs
+# (tests/emacs_bridge_server.el) and needs an `emacs' on PATH (override with
+# ERB_EMACS).  The 120 s ctest timeout plus per-RPC deadlines turn any
+# deadlock into a failed test, never a hung one.
+# ---------------------------------------------------------------------------
+add_executable(integration_test tests/integration_test.cpp)
+target_compile_definitions(integration_test PRIVATE
+  RPC_SRC_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(integration_test PRIVATE rpc_bridge_proto)
+add_test(NAME integration_test COMMAND integration_test)
+set_tests_properties(integration_test PROPERTIES TIMEOUT 120)
