@@ -18,10 +18,12 @@
 
 #include <emacs-module.h>
 
+#include <chrono>
 #include <map>
 #include <mutex>
 #include <random>
 #include <string>
+#include <vector>
 
 #include "bridge_internal.h"
 
@@ -45,6 +47,7 @@ struct SessionRegistry::Entry {
   uint64_t next_handle = 1;
   std::map<uint64_t, emacs_value> handles;
   bool closed = false;
+  std::chrono::steady_clock::time_point last_active;
 };
 
 std::shared_ptr<SessionRegistry::Entry> SessionRegistry::find_locked(
@@ -59,13 +62,38 @@ bool SessionRegistry::create(const std::string &id) {
                                        // fresh token
   auto e = std::make_shared<Entry>();
   e->id = id;
+  e->last_active = std::chrono::steady_clock::now();
   by_id_[id] = std::move(e);
+  return true;
+}
+
+bool SessionRegistry::touch(const std::string &id) {
+  std::lock_guard<std::mutex> lk(m_);
+  auto it = by_id_.find(id);
+  if (it == by_id_.end()) return false;
+  it->second->last_active = std::chrono::steady_clock::now();
   return true;
 }
 
 bool SessionRegistry::exists(const std::string &id) {
   std::lock_guard<std::mutex> lk(m_);
   return by_id_.count(id) != 0;
+}
+
+size_t SessionRegistry::expire_older_than(
+    emacs_env *env, std::chrono::steady_clock::duration max_idle) {
+  // Collect ids under the lock, then close outside it (close_session
+  // re-locks and touches only that entry; ids are unique forever, so a
+  // session created between collect and close cannot be the same entry).
+  auto cutoff = std::chrono::steady_clock::now() - max_idle;
+  std::vector<std::string> expired;
+  {
+    std::lock_guard<std::mutex> lk(m_);
+    for (const auto &[sid, e] : by_id_)
+      if (e->last_active < cutoff) expired.push_back(sid);
+  }
+  for (const std::string &sid : expired) close_session(env, sid);
+  return expired.size();
 }
 
 size_t SessionRegistry::session_count() const {

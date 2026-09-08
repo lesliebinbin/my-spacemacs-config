@@ -1,10 +1,9 @@
-// DRAFT wire contract for the Emacs RPC bridge.
-//
-// This file is a review draft for milestone 2 of
-// runbook/emacs-rpc-bridge/design-001.org ("Define the protocol contract").
-// It is NOT yet code-generated and adds no build dependency: nothing in the
-// CMake build consumes it until the bindings milestone is reached and a
-// protobuf/gRPC toolchain is installed explicitly (no silent downloads).
+// Wire contract for the Emacs RPC bridge (runbook/emacs-rpc-bridge/
+// design-001.org).  This is the LIVE schema: the extension's CMake build
+// runs protoc over it (build/generated) for the C++ module and harness,
+// and the independent Python consumer (design-001.org TODO 5,
+// ~/codings/emacs-rpc-py-client-test) regenerates its own stubs from this
+// same file with grpc_tools.protoc.  No generated code is checked in.
 //
 // Design notes encoded below (see design-001.org TODO 2 for the rationale):
 //   - Clients hold opaque, session-scoped handles, never copies of internal

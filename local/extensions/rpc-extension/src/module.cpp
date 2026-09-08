@@ -2,7 +2,10 @@
 //
 // Registers a small set of native functions plus two load-time demos:
 //
-//   emacs-rpc-bridge-native-start  SOCKET-FILE [QUEUE-DEPTH MAX-PER-TICK]
+//   emacs-rpc-bridge-native-start  SOCKET-FILE
+//                                  [QUEUE-DEPTH MAX-PER-TICK
+//                                   LEASE-SECONDS MAX-SESSIONS
+//                                   MAX-MESSAGE-BYTES]
 //   emacs-rpc-bridge-native-drain
 //   emacs-rpc-bridge-native-stop
 //   emacs-rpc-bridge-native-running-p
@@ -53,8 +56,11 @@ const std::string kSymbolPrefix = "emacs-rpc-bridge-";
 // at process exit, after which no Emacs API call is legal anyway.
 std::unique_ptr<ServerCore> g_server;
 
-const intmax_t kDefaultQueueDepth = 100;   // defcustom default (lisp side)
-const intmax_t kDefaultMaxPerTick = 20;    // defcustom default (lisp side)
+const intmax_t kDefaultQueueDepth = 100;      // defcustom default (lisp side)
+const intmax_t kDefaultMaxPerTick = 20;       // defcustom default (lisp side)
+const intmax_t kDefaultLeaseSeconds = 300;    // idle-session lease (0 = off)
+const intmax_t kDefaultMaxSessions = 32;      // session quota (0 = unlimited)
+const intmax_t kDefaultMaxMessageBytes = 0;   // 0 = gRPC default (4 MiB)
 
 // ---- exit-state helpers -----------------------------------------------------
 
@@ -161,6 +167,9 @@ emacs_value F_native_start(emacs_env *env, ptrdiff_t nargs,
 
     intmax_t queue_depth = kDefaultQueueDepth;
     intmax_t max_per_tick = kDefaultMaxPerTick;
+    intmax_t lease_seconds = kDefaultLeaseSeconds;
+    intmax_t max_sessions = kDefaultMaxSessions;
+    intmax_t max_message_bytes = kDefaultMaxMessageBytes;
     if (nargs >= 2) {
       queue_depth = fixnum_arg(env, args[1], "QUEUE-DEPTH");
       if (exit_pending(env)) return nullptr;
@@ -177,13 +186,41 @@ emacs_value F_native_start(emacs_env *env, ptrdiff_t nargs,
         return nullptr;
       }
     }
+    if (nargs >= 4) {
+      lease_seconds = fixnum_arg(env, args[3], "LEASE-SECONDS");
+      if (exit_pending(env)) return nullptr;
+      if (lease_seconds < 0 || lease_seconds > 86400 * 365) {
+        signal_error(env, "LEASE-SECONDS out of range (0..31536000)");
+        return nullptr;
+      }
+    }
+    if (nargs >= 5) {
+      max_sessions = fixnum_arg(env, args[4], "MAX-SESSIONS");
+      if (exit_pending(env)) return nullptr;
+      if (max_sessions < 0 || max_sessions > 65536) {
+        signal_error(env, "MAX-SESSIONS out of range (0..65536)");
+        return nullptr;
+      }
+    }
+    if (nargs >= 6) {
+      max_message_bytes = fixnum_arg(env, args[5], "MAX-MESSAGE-BYTES");
+      if (exit_pending(env)) return nullptr;
+      if (max_message_bytes < 0 ||
+          max_message_bytes > static_cast<intmax_t>(1) << 30) {
+        signal_error(env, "MAX-MESSAGE-BYTES out of range (0..1073741824)");
+        return nullptr;
+      }
+    }
 
     std::string version = emacs_version_string(env);
     if (!g_server) g_server = std::make_unique<ServerCore>();
     bool started = g_server->start(socket_path,
                                    static_cast<size_t>(queue_depth),
                                    static_cast<size_t>(max_per_tick),
-                                   version);
+                                   version,
+                                   lease_seconds,
+                                   static_cast<size_t>(max_sessions),
+                                   static_cast<size_t>(max_message_bytes));
     if (!started) {
       signal_error(env, "bridge could not start (already running)");
       return nullptr;
@@ -270,15 +307,18 @@ extern "C" int emacs_module_init(struct emacs_runtime *ert) {
                  "Return ARG converted to upper case."));
 
   defun(env, "native-start",
-        make_fun(env, 1, 3, F_native_start,
+        make_fun(env, 1, 6, F_native_start,
                  "Start the gRPC bridge on Unix socket SOCKET-FILE.\n\n"
                  "Optional QUEUE-DEPTH (default 100) bounds the request "
                  "queue; MAX-PER-TICK (default 20) bounds requests drained "
-                 "per timer tick.  Returns t once started; the bridge "
-                 "finishes binding asynchronously — poll "
-                 "`emacs-rpc-bridge-native-running-p' and "
-                 "`emacs-rpc-bridge-native-last-error'.  Starts nothing at "
-                 "module load; this function must be called explicitly."));
+                 "per timer tick; LEASE-SECONDS (default 300, 0 disables) "
+                 "closes idle sessions; MAX-SESSIONS (default 32, 0 "
+                 "unlimited) caps concurrent sessions; MAX-MESSAGE-BYTES "
+                 "(default 0 = gRPC default 4 MiB) caps inbound messages.  "
+                 "Returns t once started; the bridge finishes binding "
+                 "asynchronously — poll `emacs-rpc-bridge-native-running-p' "
+                 "and `emacs-rpc-bridge-native-last-error'.  Starts nothing "
+                 "at module load; this function must be called explicitly."));
   defun(env, "native-drain",
         make_fun(env, 0, 0, F_native_drain,
                  "Execute queued bridge requests on this thread.\n\n"

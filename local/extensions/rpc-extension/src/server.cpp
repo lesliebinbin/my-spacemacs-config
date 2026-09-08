@@ -185,6 +185,13 @@ class EmacsRpcServiceImpl final : public emacs::rpc::v1::EmacsRpc::Service {
     if (req->protocol_version() < 1)
       return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
                           "unsupported protocol version");
+    // Session quota (design-001.org TODO 5): concurrent sessions are
+    // capped so disconnected clients cannot pile up without bound.  Two
+    // workers may race past the check by one session — a soft quota.
+    if (impl_->max_sessions > 0 &&
+        impl_->registry->session_count() >= impl_->max_sessions)
+      return grpc::Status(grpc::StatusCode::RESOURCE_EXHAUSTED,
+                          "too many open sessions");
     int32_t version =
         std::min<int32_t>(req->protocol_version(), kProtocolVersion);
     // Token collision is astronomically unlikely; retry rather than fail.
@@ -201,7 +208,8 @@ class EmacsRpcServiceImpl final : public emacs::rpc::v1::EmacsRpc::Service {
   grpc::Status Call(grpc::ServerContext *ctx,
                     const emacs::rpc::v1::CallRequest *req,
                     emacs::rpc::v1::CallResponse *resp) override {
-    if (!impl_->registry->exists(req->session_id())) return unknown_session();
+    // touch() doubles as the exists() check and refreshes the lease.
+    if (!impl_->registry->touch(req->session_id())) return unknown_session();
 
     auto job = std::make_shared<RequestJob>();
     job->type = RequestJob::Type::kCall;
@@ -237,7 +245,7 @@ class EmacsRpcServiceImpl final : public emacs::rpc::v1::EmacsRpc::Service {
   grpc::Status WithBuffer(grpc::ServerContext *ctx,
                           const emacs::rpc::v1::WithBufferRequest *req,
                           emacs::rpc::v1::WithBufferResponse *resp) override {
-    if (!impl_->registry->exists(req->session_id())) return unknown_session();
+    if (!impl_->registry->touch(req->session_id())) return unknown_session();
     bool found = false;
     impl_->registry->lookup(req->session_id(), req->buffer().id(), &found);
     if (!found)
@@ -286,7 +294,7 @@ class EmacsRpcServiceImpl final : public emacs::rpc::v1::EmacsRpc::Service {
                               const emacs::rpc::v1::ReleaseHandlesRequest *req,
                               emacs::rpc::v1::ReleaseHandlesResponse *resp) override {
     (void)resp;
-    if (!impl_->registry->exists(req->session_id())) return unknown_session();
+    if (!impl_->registry->touch(req->session_id())) return unknown_session();
 
     auto job = std::make_shared<RequestJob>();
     job->type = RequestJob::Type::kReleaseHandles;
@@ -306,7 +314,7 @@ class EmacsRpcServiceImpl final : public emacs::rpc::v1::EmacsRpc::Service {
                             const emacs::rpc::v1::CloseSessionRequest *req,
                             emacs::rpc::v1::CloseSessionResponse *resp) override {
     (void)resp;
-    if (!impl_->registry->exists(req->session_id())) return unknown_session();
+    if (!impl_->registry->touch(req->session_id())) return unknown_session();
 
     auto job = std::make_shared<RequestJob>();
     job->type = RequestJob::Type::kCloseSession;
@@ -377,7 +385,9 @@ ServerCore::~ServerCore() {
 }
 
 bool ServerCore::start(const std::string &socket_path, size_t queue_depth,
-                       size_t max_per_tick, const std::string &emacs_version) {
+                       size_t max_per_tick, const std::string &emacs_version,
+                       int64_t lease_seconds, size_t max_sessions,
+                       size_t max_message_bytes) {
   // A serving thread left over from a failed earlier start has exited.
   if (impl_->serving_thread.joinable()) impl_->serving_thread.join();
   if (running()) return false;
@@ -388,6 +398,9 @@ bool ServerCore::start(const std::string &socket_path, size_t queue_depth,
     impl_->stopping = false;
     impl_->capacity = queue_depth;
     impl_->max_per_tick = max_per_tick;
+    impl_->lease_seconds = lease_seconds;
+    impl_->max_sessions = max_sessions;
+    impl_->max_message_bytes = max_message_bytes;
     impl_->emacs_version = emacs_version;
     impl_->socket_path = socket_path;
     impl_->start_error.clear();
@@ -404,6 +417,13 @@ bool ServerCore::start(const std::string &socket_path, size_t queue_depth,
       grpc::ServerBuilder builder;
       builder.AddListeningPort("unix:" + impl->socket_path,
                                grpc::InsecureServerCredentials());
+      // Message-size limit (TODO 5): oversized requests are rejected by
+      // gRPC itself with RESOURCE_EXHAUSTED, before they touch the queue
+      // or the Emacs thread.  All fields above were set before this
+      // thread started (happens-before via std::thread creation).
+      if (impl->max_message_bytes > 0)
+        builder.SetMaxReceiveMessageSize(
+            static_cast<int>(impl->max_message_bytes));
       builder.RegisterService(impl->service.get());
       auto srv = builder.BuildAndStart();
       if (!srv) {

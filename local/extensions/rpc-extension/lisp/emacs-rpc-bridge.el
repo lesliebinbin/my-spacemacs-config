@@ -87,6 +87,30 @@ changing it takes effect after a stop/start cycle."
   :type 'integer
   :group 'emacs-rpc-bridge)
 
+(defcustom emacs-rpc-bridge-lease-seconds 300
+  "Inactivity lease in seconds: sessions idle this long are closed and
+their handles freed.  A session's activity is refreshed by every request;
+disconnected clients therefore cannot leak handles indefinitely.  0
+disables expiry.  Fixed at native-start time: changing it takes effect
+after a stop/start cycle."
+  :type 'integer
+  :group 'emacs-rpc-bridge)
+
+(defcustom emacs-rpc-bridge-max-sessions 32
+  "Concurrent-session quota; OpenSession fails with RESOURCE_EXHAUSTED
+when full.  0 allows unlimited sessions.  Fixed at native-start time:
+changing it takes effect after a stop/start cycle."
+  :type 'integer
+  :group 'emacs-rpc-bridge)
+
+(defcustom emacs-rpc-bridge-max-message-bytes 0
+  "Inbound message-size cap in bytes (0 = the gRPC default of 4 MiB).
+Oversized requests are rejected by the server transport with
+RESOURCE_EXHAUSTED before they reach the queue.  Fixed at native-start
+time: changing it takes effect after a stop/start cycle."
+  :type 'integer
+  :group 'emacs-rpc-bridge)
+
 ;; ---- module loading ---------------------------------------------------------
 
 (defvar emacs-rpc-bridge--source-dir nil
@@ -128,25 +152,28 @@ subdirectory of the temporary directory, chmod 700."
                           private)))))
 
 ;;;###autoload
-(defun emacs-rpc-bridge-start (&optional socket-file queue-depth max-per-tick)
+(defun emacs-rpc-bridge-start (&optional socket-file queue-depth max-per-tick
+                                        lease-seconds max-sessions
+                                        max-message-bytes)
   "Start the bridge on Unix socket SOCKET-FILE (per-user default).
-Optional QUEUE-DEPTH and MAX-PER-TICK override the defcustoms for this
-run.  Starts the drain timer; returns the socket path once the server is
-bound and running."
+Optional QUEUE-DEPTH, MAX-PER-TICK, LEASE-SECONDS, MAX-SESSIONS and
+MAX-MESSAGE-BYTES override the defcustoms for this run (see each
+defcustom for semantics; nil means the defcustom value).  Starts the
+drain timer; returns the socket path once the server is bound and
+running."
   (interactive)
   (emacs-rpc-bridge--load-module)
   (when (emacs-rpc-bridge-running-p)
     (user-error "emacs-rpc-bridge is already running"))
   (let ((sock (or socket-file (emacs-rpc-bridge--socket-path))))
     (when (file-exists-p sock) (delete-file sock))
-    (let ((args (list sock)))
-      (when queue-depth
-        (setq args (append args (list queue-depth))))
-      (when max-per-tick
-        (unless queue-depth
-          (setq args (append args (list emacs-rpc-bridge-queue-depth))))
-        (setq args (append args (list max-per-tick))))
-      (apply #'emacs-rpc-bridge-native-start args))
+    (apply #'emacs-rpc-bridge-native-start
+           (list sock
+                 (or queue-depth emacs-rpc-bridge-queue-depth)
+                 (or max-per-tick emacs-rpc-bridge-max-drain-per-tick)
+                 (or lease-seconds emacs-rpc-bridge-lease-seconds)
+                 (or max-sessions emacs-rpc-bridge-max-sessions)
+                 (or max-message-bytes emacs-rpc-bridge-max-message-bytes)))
     ;; native-start returns before the gRPC server has bound; poll briefly.
     (let ((i 0) err)
       (while (and (< i 100)

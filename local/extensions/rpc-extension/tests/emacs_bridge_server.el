@@ -11,6 +11,9 @@
 ;;;   ERB_LISP_DIR    directory of lisp/emacs-rpc-bridge.el (added to path)
 ;;;   ERB_READY_FILE  harness polls for this; we write the socket path to it
 ;;;   ERB_HALT_FILE   harness creates this file to request graceful shutdown
+;;;   ERB_LEASE_SECONDS / ERB_MAX_SESSIONS / ERB_MAX_MESSAGE_BYTES
+;;;                   optional start-knob overrides for the TODO 5 limits,
+;;;                   quota, and lease scenarios (absent = defcustoms)
 
 (add-to-list 'load-path (getenv "ERB_LISP_DIR"))
 (require 'emacs-rpc-bridge)
@@ -36,7 +39,15 @@
 ;; starts executing one request cannot sweep up later arrivals, which is what
 ;; makes the shutdown-with-pending scenario deterministic.
 (customize-set-variable 'emacs-rpc-bridge-timer-period 0.02)
-(emacs-rpc-bridge-start nil nil 1)
+(defun erb-env-int (name)
+  "Environment variable NAME as an integer, or nil when unset."
+  (let ((v (getenv name)))
+    (and v (not (string-empty-p v)) (string-to-number v))))
+(emacs-rpc-bridge-start
+ nil nil 1
+ (erb-env-int "ERB_LEASE_SECONDS")
+ (erb-env-int "ERB_MAX_SESSIONS")
+ (erb-env-int "ERB_MAX_MESSAGE_BYTES"))
 (unless (emacs-rpc-bridge-running-p)
   (message "server: bridge failed to start: %s"
            (emacs-rpc-bridge-native-last-error))

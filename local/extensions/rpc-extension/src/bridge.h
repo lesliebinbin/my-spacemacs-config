@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <condition_variable>
 #include <cstdint>
 #include <map>
@@ -86,13 +87,24 @@ struct RequestJob {
 // Session-scoped handle table.  Rules (design-001.org TODO 3):
 //   - Methods that take emacs_value / env touch global refs and must be
 //     called ONLY on the Emacs thread (from the drain or from stop).
-//   - create/exists/session_count touch metadata only and may run on any
-//     thread (OpenSession runs on a gRPC worker).
+//   - create/touch/exists/session_count touch metadata only and may run on
+//     any thread (OpenSession and the request handlers run on gRPC
+//     workers).
+//   - Sessions carry an inactivity timestamp refreshed by every request;
+//     expire_older_than (Emacs thread, from the drain) enforces the lease.
 class SessionRegistry {
  public:
   bool create(const std::string &id);   // any thread
+  bool touch(const std::string &id);    // any thread; true if the session
+                                        // exists, and refreshes its lease
   bool exists(const std::string &id);   // any thread
   size_t session_count() const;         // any thread
+
+  // Closes every session idle for more than MAX_IDLE (lease enforcement,
+  // design-001.org TODO 3 "inactivity leases" + TODO 5).  Returns how many
+  // were closed.  Emacs-thread only: frees global refs via ENV.
+  size_t expire_older_than(emacs_env *env,
+                           std::chrono::steady_clock::duration max_idle);
 
   // --- Emacs-thread-only (valid env required) ---
   uint64_t add_handle(emacs_env *env, const std::string &session_id,
@@ -121,9 +133,15 @@ class ServerCore {
   ~ServerCore();
 
   // Spawns the gRPC serving thread.  Returns immediately; actual readiness
-  // is visible via running().
+  // is visible via running().  Knobs, all fixed at start:
+  //   LEASE_SECONDS   idle sessions are closed after this long (0 = never)
+  //   MAX_SESSIONS    concurrent-session quota (0 = unlimited)
+  //   MAX_MESSAGE_BYTES  inbound message-size cap, enforced by gRPC
+  //                      (0 = gRPC's own default)
   bool start(const std::string &socket_path, size_t queue_depth,
-             size_t max_per_tick, const std::string &emacs_version);
+             size_t max_per_tick, const std::string &emacs_version,
+             int64_t lease_seconds, size_t max_sessions,
+             size_t max_message_bytes);
   // Stops accepting, completes/cancels pending work, joins the serving
   // thread, and frees all remaining session references (env required).
   void stop_and_join(emacs_env *env);

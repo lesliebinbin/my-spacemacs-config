@@ -9,7 +9,9 @@
 #include "bridge.h"
 
 #include <atomic>
+#include <chrono>
 #include <condition_variable>
+#include <cstdint>
 #include <deque>
 #include <mutex>
 #include <string>
@@ -42,6 +44,9 @@ struct ServerCore::Impl {
   std::string socket_path;         // fixed at start, read by serving thread
   std::string emacs_version;       // fixed at start, read by workers
   size_t max_per_tick = 20;        // fixed at start (Emacs-thread reads)
+  int64_t lease_seconds = 300;     // idle-session lease; 0 disables expiry
+  size_t max_sessions = 32;        // concurrent-session quota; 0 unlimited
+  size_t max_message_bytes = 0;    // inbound cap; 0 = gRPC default (4 MiB)
   std::atomic<bool> server_up{false};    // set by serving thread
   std::atomic<bool> start_failed{false}; // set by serving thread
   std::string start_error;         // guarded by qm, written by serving thread

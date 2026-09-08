@@ -29,6 +29,7 @@
 
 #include <emacs-module.h>
 
+#include <chrono>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -576,7 +577,22 @@ void dispatch_job(emacs_env *env, ServerCore::Impl *impl, RequestJob *job) {
   WireError fatal;
   std::vector<CallResult> results;
 
-  switch (job->type) {
+  // Lease/close enforcement: a session can die between enqueue (its
+  // handler touched it) and this drain pass (the sweep above, or an
+  // explicit CloseSession).  Executing the request anyway would run
+  // side effects for a client that no longer owns a session; fail it as
+  // a structured op error instead.  Release/Close are idempotent no-ops
+  // on an absent session and do not need the guard.
+  bool session_alive =
+      job->type == RequestJob::Type::kReleaseHandles ||
+      job->type == RequestJob::Type::kCloseSession ||
+      impl->registry->exists(job->session);
+  if (!session_alive) {
+    fatal.symbol = "unknown-session";
+    fatal.message = "session expired or closed while the request was queued";
+  }
+
+  if (session_alive) switch (job->type) {
     case RequestJob::Type::kCall: {
       CallResult r;
       run_call(env, impl->registry.get(), job->session, job->call, &r);
@@ -614,6 +630,14 @@ void dispatch_job(emacs_env *env, ServerCore::Impl *impl, RequestJob *job) {
 
 size_t ServerCore::drain_once(emacs_env *env) {
   if (!impl_ || !impl_->server_up.load()) return 0;
+
+  // Lease sweep (TODO 5): the drain timer fires continuously while the
+  // bridge runs, so this piggybacks free of charge and runs only on the
+  // Emacs thread, where freeing the expired sessions' global refs is
+  // legal.  Idle sessions thus die at most one tick after their lease.
+  if (impl_->lease_seconds > 0)
+    impl_->registry->expire_older_than(
+        env, std::chrono::seconds(impl_->lease_seconds));
 
   size_t n = 0;
   for (; n < impl_->max_per_tick; ++n) {
