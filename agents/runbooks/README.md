@@ -17,6 +17,9 @@ Do not place automatic activation rules here; those belong in a skill.
 - [`fork-patch-emacs-package.md`](fork-patch-emacs-package.md): fork, patch,
   compile-test with `eldev`, and wire unmaintained Emacs packages into
   Spacemacs via Quelpa recipes.
+- [`ruby-elisp-transpiler.md`](ruby-elisp-transpiler.md): develop, maintain, and
+  verify the Ruby DSL to Emacs Lisp transpiler using Prism AST parsing and
+  S-expression generation.
 - [`scikit-build-cuda-extension.md`](scikit-build-cuda-extension.md): bootstrap
   a library-first Python package with CMake, CUDA, and separate pybind11
   training and inference modules.
