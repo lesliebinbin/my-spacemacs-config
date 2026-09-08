@@ -1,0 +1,100 @@
+#+TITLE: Emacs Bytecode Protobuf Asset Handoff
+
+* Purpose and files
+
+=emacs-bytecode.proto= defines a language-neutral wire container for opcode
+numbers and compiled functions. It is intended for generators in multiple
+languages. A receiver must decode, validate, and materialize Emacs Lisp objects
+before invoking =make-byte-code=. Protobuf serialization is not Emacs bytecode
+or an =.elc= file, and this asset does not implement a transport or loader.
+
+The feature lifecycle remains in
+=~/.emacs.d/runbook/ruby-elisp-transpiler/design-001.org=.
+Reference: =~/.emacs.d/emacs-opcode-datasheet.md=.
+
+* Opcode coverage
+
+The flat =OpCode= enum preserves every numeric entry from the datasheet:
+223 executable byte values and invalid zero. Constant opcodes 192 through 255
+and the compact argument variants are individually enumerated. Conceptual
+categories do not change the VM's flat opcode space.
+
+The Emacs 31.1 source also defines obsolete values 97, 116, 139, 141, 143,
+144, and 145, intentionally omitted here because the datasheet omits them.
+Reject those and other unlisted values in opcode positions. Operand bytes
+can have any value allowed by their instruction's encoding; do not validate
+every byte as if it were an opcode. Proto3 enums alone do not reject unknown
+numeric values. The instructions field contains raw bytes, not serialized enums.
+
+* Function representation
+
+The artifact explicitly declares schema version 1 and Emacs target 31.1.
+The receiver must reject unsupported versions rather than assume compatibility.
+The function maps to =#[ARGS CODE CONSTANTS STACK_DEPTH DOC INTERACTIVE]=.
+It can use either a lexical argument template or a dynamic parameter list.
+These alternatives must be explicitly selected, including a zero lexical template.
+
+Encode lexical arity as:
+=mandatory | (has_rest ? 128 : 0) | (nonrest << 8)=.
+=nonrest= includes required and optional parameters, excluding the rest slot.
+Require =mandatory <= nonrest= and target-compatible size limits. The datasheet's
+section 5 comment suggesting integer 2 for two required arguments is incorrect:
+two required arguments, no optionals/rest, use =0x0202= (514).
+
+Constants support nil, true, signed 64-bit integers, decimal big integers,
+floats, Unicode strings, unibyte strings, interned symbols, cons cells, vectors,
+and nested compiled functions. Lists are cons chains ending in explicit nil.
+Require every LispValue oneof to be selected and both cons fields to be present.
+Decimal big integers use =0= or an optional minus followed by a nonzero digit
+and remaining digits; reject leading zeros and negative zero.
+
+This initial tree representation does not preserve shared identity, cycles,
+uninterned symbols, text properties, records, hash tables, bool-vectors,
+live buffers/windows, or arbitrary captured runtime objects. Producers must
+reject unsupported constants instead of silently copying or converting them.
+It covers a portable subset of compiled functions, not every possible Lisp object.
+
+Documentation may be absent or explicitly nil, a Lisp string, or an integer
+doc-file reference. Integer references require the matching external doc file;
+the initial loader should reject them unless that context is supplied.
+Interactive metadata may be absent or explicitly nil, a string, or a Lisp form.
+When interactive is supplied without documentation, insert nil in the doc slot.
+Never execute arbitrary textual input via read/eval merely to decode constants.
+
+* Validation and receiver responsibilities
+
+- Decode instruction boundaries and little-endian operands for the target VM.
+- Check constant indexes, jump/handler destinations, stack underflow, stack
+  references, maximum depth, and compatible control-flow joins.
+- Account for arguments on the entry stack, dynamic bindings, and handlers.
+- Validate argument lists, metadata types, numeric limits, and resource limits.
+- Materialize symbols using intern, strings with the specified representation,
+  and constants as a vector. Construct the function with make-byte-code.
+- Function naming/registration and execution are separate receiver operations;
+  this artifact does not automatically define a global function or execute it.
+- This is executable code, not a sandbox. Establish the receiver's execution
+  authorization separately from wire-format correctness.
+
+* Small acceptance fixture
+
+A function returning 42 has schema_version 1, emacs_version "31.1",
+lexical_argument_template 0, instructions bytes =[192, 135]=, one constant
+with integer_value 42, and max_stack 1. It corresponds to:
+
+#+begin_src emacs-lisp
+(make-byte-code 0 (unibyte-string 192 135) [42] 1)
+#+end_src
+
+After a loader exists, validate protobuf round trips and execution of this
+fixture, then add argument, branching, nested-function, and rejection cases.
+Keep protobuf outputs generated for individual languages out of this asset;
+generate them from the schema with the consumer's supported toolchain.
+
+* Validation performed for this asset
+
+- Compiled the schema successfully with grpc_tools.protoc to a descriptor set.
+- Evaluated the constant-return fixture in installed Emacs 31.1: result 42.
+- Evaluated a two-required-argument addition function with template 514:
+  arguments 3 and 7 produced 10.
+- These checks validate schema syntax and representative Emacs object encoding;
+  they are not a protobuf-to-Emacs round trip, since no loader exists yet.

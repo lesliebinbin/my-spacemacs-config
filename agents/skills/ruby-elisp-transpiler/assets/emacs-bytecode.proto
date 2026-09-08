@@ -1,0 +1,284 @@
+syntax = "proto3";
+
+package emacs.bytecode.v1;
+
+// Wire schema for the Emacs 31.1 datasheet, not an Emacs .elc format.
+// See handoff.org for validation rules and intentionally unsupported values.
+// Numeric values are raw opcode bytes. Zero is INVALID, never executable.
+// Obsolete instructions omitted by the datasheet are intentionally excluded.
+enum OpCode {
+  OP_INVALID = 0;
+  OP_STACK_REF1 = 1;
+  OP_STACK_REF2 = 2;
+  OP_STACK_REF3 = 3;
+  OP_STACK_REF4 = 4;
+  OP_STACK_REF5 = 5;
+  OP_STACK_REF6 = 6;
+  OP_STACK_REF7 = 7;
+  OP_VARREF0 = 8;
+  OP_VARREF1 = 9;
+  OP_VARREF2 = 10;
+  OP_VARREF3 = 11;
+  OP_VARREF4 = 12;
+  OP_VARREF5 = 13;
+  OP_VARREF6 = 14;
+  OP_VARREF7 = 15;
+  OP_VARSET0 = 16;
+  OP_VARSET1 = 17;
+  OP_VARSET2 = 18;
+  OP_VARSET3 = 19;
+  OP_VARSET4 = 20;
+  OP_VARSET5 = 21;
+  OP_VARSET6 = 22;
+  OP_VARSET7 = 23;
+  OP_VARBIND0 = 24;
+  OP_VARBIND1 = 25;
+  OP_VARBIND2 = 26;
+  OP_VARBIND3 = 27;
+  OP_VARBIND4 = 28;
+  OP_VARBIND5 = 29;
+  OP_VARBIND6 = 30;
+  OP_VARBIND7 = 31;
+  OP_CALL0 = 32;
+  OP_CALL1 = 33;
+  OP_CALL2 = 34;
+  OP_CALL3 = 35;
+  OP_CALL4 = 36;
+  OP_CALL5 = 37;
+  OP_CALL6 = 38;
+  OP_CALL7 = 39;
+  OP_UNBIND0 = 40;
+  OP_UNBIND1 = 41;
+  OP_UNBIND2 = 42;
+  OP_UNBIND3 = 43;
+  OP_UNBIND4 = 44;
+  OP_UNBIND5 = 45;
+  OP_UNBIND6 = 46;
+  OP_UNBIND7 = 47;
+  OP_POPHANDLER = 48;
+  OP_PUSHCONDITIONCASE = 49;
+  OP_PUSHCATCH = 50;
+  OP_NTH = 56;
+  OP_SYMBOLP = 57;
+  OP_CONSP = 58;
+  OP_STRINGP = 59;
+  OP_LISTP = 60;
+  OP_EQ = 61;
+  OP_MEMQ = 62;
+  OP_NOT = 63;
+  OP_CAR = 64;
+  OP_CDR = 65;
+  OP_CONS = 66;
+  OP_LIST1 = 67;
+  OP_LIST2 = 68;
+  OP_LIST3 = 69;
+  OP_LIST4 = 70;
+  OP_LENGTH = 71;
+  OP_AREF = 72;
+  OP_ASET = 73;
+  OP_SYMBOL_VALUE = 74;
+  OP_SYMBOL_FUNCTION = 75;
+  OP_SET = 76;
+  OP_FSET = 77;
+  OP_GET = 78;
+  OP_SUBSTRING = 79;
+  OP_CONCAT2 = 80;
+  OP_CONCAT3 = 81;
+  OP_CONCAT4 = 82;
+  OP_SUB1 = 83;
+  OP_ADD1 = 84;
+  OP_EQLSIGN = 85;
+  OP_GTR = 86;
+  OP_LSS = 87;
+  OP_LEQ = 88;
+  OP_GEQ = 89;
+  OP_DIFF = 90;
+  OP_NEGATE = 91;
+  OP_PLUS = 92;
+  OP_MAX = 93;
+  OP_MIN = 94;
+  OP_MULT = 95;
+  OP_POINT = 96;
+  OP_GOTO_CHAR = 98;
+  OP_INSERT = 99;
+  OP_POINT_MAX = 100;
+  OP_POINT_MIN = 101;
+  OP_CHAR_AFTER = 102;
+  OP_FOLLOWING_CHAR = 103;
+  OP_PRECEDING_CHAR = 104;
+  OP_CURRENT_COLUMN = 105;
+  OP_INDENT_TO = 106;
+  OP_EOLP = 108;
+  OP_EOBP = 109;
+  OP_BOLP = 110;
+  OP_BOBP = 111;
+  OP_CURRENT_BUFFER = 112;
+  OP_SET_BUFFER = 113;
+  OP_SAVE_CURRENT_BUFFER = 114;
+  OP_FORWARD_CHAR = 117;
+  OP_FORWARD_WORD = 118;
+  OP_SKIP_CHARS_FORWARD = 119;
+  OP_SKIP_CHARS_BACKWARD = 120;
+  OP_FORWARD_LINE = 121;
+  OP_CHAR_SYNTAX = 122;
+  OP_BUFFER_SUBSTRING = 123;
+  OP_DELETE_REGION = 124;
+  OP_NARROW_TO_REGION = 125;
+  OP_WIDEN = 126;
+  OP_END_OF_LINE = 127;
+  OP_CONSTANT2 = 129;
+  OP_GOTO = 130;
+  OP_GOTO_IF_NIL = 131;
+  OP_GOTO_IF_NOT_NIL = 132;
+  OP_GOTO_IF_NIL_ELSE_POP = 133;
+  OP_GOTO_IF_NOT_NIL_ELSE_POP = 134;
+  OP_RETURN = 135;
+  OP_DISCARD = 136;
+  OP_DUP = 137;
+  OP_SAVE_EXCURSION = 138;
+  OP_SAVE_RESTRICTION = 140;
+  OP_UNWIND_PROTECT = 142;
+  OP_SET_MARKER = 147;
+  OP_MATCH_BEGINNING = 148;
+  OP_MATCH_END = 149;
+  OP_UPCASE = 150;
+  OP_DOWNCASE = 151;
+  OP_STRING_EQUAL = 152;
+  OP_STRING_LESS = 153;
+  OP_EQUAL = 154;
+  OP_NTHCDR = 155;
+  OP_ELT = 156;
+  OP_MEMBER = 157;
+  OP_ASSQ = 158;
+  OP_NREVERSE = 159;
+  OP_SETCAR = 160;
+  OP_SETCDR = 161;
+  OP_CAR_SAFE = 162;
+  OP_CDR_SAFE = 163;
+  OP_NCONC = 164;
+  OP_QUO = 165;
+  OP_REM = 166;
+  OP_NUMBERP = 167;
+  OP_INTEGERP = 168;
+  OP_LISTN = 175;
+  OP_CONCATN = 176;
+  OP_INSERTN = 177;
+  OP_STACK_SET = 178;
+  OP_STACK_SET2 = 179;
+  OP_DISCARDN = 182;
+  OP_SWITCH = 183;
+  OP_CONSTANT_INDEX_0 = 192;
+  OP_CONSTANT_INDEX_1 = 193;
+  OP_CONSTANT_INDEX_2 = 194;
+  OP_CONSTANT_INDEX_3 = 195;
+  OP_CONSTANT_INDEX_4 = 196;
+  OP_CONSTANT_INDEX_5 = 197;
+  OP_CONSTANT_INDEX_6 = 198;
+  OP_CONSTANT_INDEX_7 = 199;
+  OP_CONSTANT_INDEX_8 = 200;
+  OP_CONSTANT_INDEX_9 = 201;
+  OP_CONSTANT_INDEX_10 = 202;
+  OP_CONSTANT_INDEX_11 = 203;
+  OP_CONSTANT_INDEX_12 = 204;
+  OP_CONSTANT_INDEX_13 = 205;
+  OP_CONSTANT_INDEX_14 = 206;
+  OP_CONSTANT_INDEX_15 = 207;
+  OP_CONSTANT_INDEX_16 = 208;
+  OP_CONSTANT_INDEX_17 = 209;
+  OP_CONSTANT_INDEX_18 = 210;
+  OP_CONSTANT_INDEX_19 = 211;
+  OP_CONSTANT_INDEX_20 = 212;
+  OP_CONSTANT_INDEX_21 = 213;
+  OP_CONSTANT_INDEX_22 = 214;
+  OP_CONSTANT_INDEX_23 = 215;
+  OP_CONSTANT_INDEX_24 = 216;
+  OP_CONSTANT_INDEX_25 = 217;
+  OP_CONSTANT_INDEX_26 = 218;
+  OP_CONSTANT_INDEX_27 = 219;
+  OP_CONSTANT_INDEX_28 = 220;
+  OP_CONSTANT_INDEX_29 = 221;
+  OP_CONSTANT_INDEX_30 = 222;
+  OP_CONSTANT_INDEX_31 = 223;
+  OP_CONSTANT_INDEX_32 = 224;
+  OP_CONSTANT_INDEX_33 = 225;
+  OP_CONSTANT_INDEX_34 = 226;
+  OP_CONSTANT_INDEX_35 = 227;
+  OP_CONSTANT_INDEX_36 = 228;
+  OP_CONSTANT_INDEX_37 = 229;
+  OP_CONSTANT_INDEX_38 = 230;
+  OP_CONSTANT_INDEX_39 = 231;
+  OP_CONSTANT_INDEX_40 = 232;
+  OP_CONSTANT_INDEX_41 = 233;
+  OP_CONSTANT_INDEX_42 = 234;
+  OP_CONSTANT_INDEX_43 = 235;
+  OP_CONSTANT_INDEX_44 = 236;
+  OP_CONSTANT_INDEX_45 = 237;
+  OP_CONSTANT_INDEX_46 = 238;
+  OP_CONSTANT_INDEX_47 = 239;
+  OP_CONSTANT_INDEX_48 = 240;
+  OP_CONSTANT_INDEX_49 = 241;
+  OP_CONSTANT_INDEX_50 = 242;
+  OP_CONSTANT_INDEX_51 = 243;
+  OP_CONSTANT_INDEX_52 = 244;
+  OP_CONSTANT_INDEX_53 = 245;
+  OP_CONSTANT_INDEX_54 = 246;
+  OP_CONSTANT_INDEX_55 = 247;
+  OP_CONSTANT_INDEX_56 = 248;
+  OP_CONSTANT_INDEX_57 = 249;
+  OP_CONSTANT_INDEX_58 = 250;
+  OP_CONSTANT_INDEX_59 = 251;
+  OP_CONSTANT_INDEX_60 = 252;
+  OP_CONSTANT_INDEX_61 = 253;
+  OP_CONSTANT_INDEX_62 = 254;
+  OP_CONSTANT_INDEX_63 = 255;
+}
+
+// An explicit target prevents silent assumptions about bytecode compatibility.
+message BytecodeArtifact {
+  uint32 schema_version = 1; // Must be 1.
+  string emacs_version = 2; // Initial supported target: "31.1".
+  CompiledFunction function = 3;
+}
+
+// Corresponds to #[ARGLIST CODE CONSTANTS STACK_DEPTH DOC INTERACTIVE].
+// Absence of a oneof/message field differs from an explicitly encoded Lisp nil.
+message CompiledFunction {
+  oneof arguments {
+    // mandatory | (has_rest ? 128 : 0) | (nonrest << 8).
+    uint64 lexical_argument_template = 1;
+    // A proper list of parameter symbols, including &optional / &rest markers.
+    LispValue dynamic_argument_list = 2;
+  }
+  bytes instructions = 3; // Unibyte code, including operand bytes.
+  repeated LispValue constants = 4; // Materialized as an Emacs vector.
+  uint32 max_stack = 5;
+  LispValue documentation = 6; // Absent, nil, string, or doc-file integer offset.
+  LispValue interactive = 7; // Absent, nil, string, or a Lisp expression.
+}
+
+// Portable Lisp data. One variant MUST be selected, recursively.
+// This tree format does not preserve sharing/cycles or live runtime handles.
+message LispValue {
+  oneof value {
+    Nil nil_value = 1;
+    Truth true_value = 2;
+    sint64 integer_value = 3;
+    double float_value = 4;
+    string text = 5; // Unicode string, without text properties.
+    bytes unibyte_string = 6; // Arbitrary 8-bit Lisp string.
+    string symbol_name = 7; // Intern in the receiving Emacs obarray.
+    Cons cons = 8;
+    Vector vector = 9;
+    CompiledFunction compiled_function = 10;
+    string big_integer_decimal = 11; // Canonical signed decimal integer.
+  }
+}
+message Nil {}
+message Truth {}
+message Cons {
+  LispValue car = 1;
+  LispValue cdr = 2;
+}
+message Vector {
+  repeated LispValue elements = 1;
+}

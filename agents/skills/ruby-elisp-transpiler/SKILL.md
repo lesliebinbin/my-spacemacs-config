@@ -12,6 +12,8 @@ transpiler project at `~/codings/ruby-elisp-transpiler`.
 
 ## Resources
 
+- Bytecode interchange schema: [`assets/emacs-bytecode.proto`](assets/emacs-bytecode.proto)
+- Schema scope, validation contract, and receiver handoff: [`assets/handoff.org`](assets/handoff.org)
 - Feature Lifecycle Runbook:
   [`~/.emacs.d/runbook/ruby-elisp-transpiler/design-001.org`](../../../runbook/ruby-elisp-transpiler/design-001.org)
 - Procedural Runbook:
