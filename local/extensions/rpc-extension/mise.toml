@@ -2,13 +2,13 @@
 # external prerequisites (see README.org); this file only drives them.
 
 [tasks.configure]
-description = "Configure the CMake build directory"
-run = "cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug"
+description = "Configure the CMake build directory (via CMakePresets.json, which sets CMAKE_PREFIX_PATH for the gRPC toolchain)"
+run = "cmake --preset default"
 
 [tasks.build]
 description = "Compile the native module into build/"
 depends = ["configure"]
-run = "cmake --build build"
+run = "cmake --build --preset default"
 
 [tasks.check]
 description = "Build, then smoke-test the module in Emacs batch mode"

@@ -143,9 +143,10 @@ message WithBufferRequest {
 
 message WithBufferResponse {
   uint64 correlation_id = 1;
-  oneof result {
-    // One entry per executed op; the first error (if any) ends the sequence.
-    repeated CallResponse results = 2;
-    Error error = 3;   // failure before any op ran (bad handle, no session)
-  }
+  // One entry per executed op; the first entry carrying an error ends the
+  // sequence (a failing op stops later ones).  Siblings rather than a oneof:
+  // "results" is repeated, and protobuf forbids repeated fields in oneofs.
+  repeated CallResponse results = 2;
+  // Failure before any op ran (unknown session, dead buffer handle).
+  Error error = 3;
 }

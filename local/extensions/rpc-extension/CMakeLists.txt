@@ -19,6 +19,9 @@ if(NOT EMACS_MODULE_INCLUDE_DIR)
     "nonstandard place, pass -DEMACS_MODULE_INCLUDE_DIR=/path/to/include.")
 endif()
 
+# ---------------------------------------------------------------------------
+# Native module (milestone 1: scaffold and validate the CMake build)
+# ---------------------------------------------------------------------------
 # MODULE (not SHARED): Emacs dlopens the built file directly, so the library
 # needs no link dependency of its own (per runbook/emacs-rpc-bridge/design-001).
 add_library(emacs-rpc-bridge MODULE src/module.cpp)
@@ -34,3 +37,54 @@ target_compile_options(emacs-rpc-bridge PRIVATE -Wall -Wextra)
 # which places it under <prefix>/emacs-rpc-bridge/.
 install(TARGETS emacs-rpc-bridge
         LIBRARY DESTINATION "emacs-rpc-bridge")
+
+# ---------------------------------------------------------------------------
+# Protocol bindings + codegen smoke (milestone 2: define the protocol
+# contract, generate bindings, validate the toolchain).
+#
+# Toolchain: gRPC v1.83.1 (protobuf 35.1, boringssl module provider) built
+# from source into /home/lesliebinbinhuang/local; that prefix is supplied to
+# find_package via CMAKE_PREFIX_PATH in CMakePresets.json.  If configure
+# fails to find gRPC here, re-check the preset path before installing
+# anything else — no silent dependency downloads.
+# ---------------------------------------------------------------------------
+# protobuf FIRST: gRPC's exported targets reference protobuf::libprotobuf and
+# protobuf::libprotoc, so protobuf's config must be loaded before gRPC's.
+find_package(protobuf CONFIG REQUIRED)
+find_package(gRPC CONFIG REQUIRED)
+
+set(PROTO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/proto")
+set(GEN_DIR "${CMAKE_BINARY_DIR}/generated")
+# protoc does not create its own output directory.
+file(MAKE_DIRECTORY "${GEN_DIR}")
+
+add_custom_command(
+  OUTPUT "${GEN_DIR}/emacs_rpc.pb.cc" "${GEN_DIR}/emacs_rpc.pb.h"
+         "${GEN_DIR}/emacs_rpc.grpc.pb.cc" "${GEN_DIR}/emacs_rpc.grpc.pb.h"
+  COMMAND $<TARGET_FILE:protobuf::protoc>
+          -I "${PROTO_ROOT}"
+          --cpp_out "${GEN_DIR}"
+          "${PROTO_ROOT}/emacs_rpc.proto"
+  COMMAND $<TARGET_FILE:protobuf::protoc>
+          -I "${PROTO_ROOT}"
+          --grpc_out "${GEN_DIR}"
+          --plugin=protoc-gen-grpc=$<TARGET_FILE:gRPC::grpc_cpp_plugin>
+          "${PROTO_ROOT}/emacs_rpc.proto"
+  DEPENDS "${PROTO_ROOT}/emacs_rpc.proto"
+  VERBATIM
+)
+
+# Generated code only — a hand edit here is overwritten on the next build.
+add_library(rpc_bridge_proto STATIC
+  "${GEN_DIR}/emacs_rpc.pb.cc"
+  "${GEN_DIR}/emacs_rpc.grpc.pb.cc")
+target_include_directories(rpc_bridge_proto PUBLIC "${GEN_DIR}")
+target_link_libraries(rpc_bridge_proto PUBLIC gRPC::grpc++)
+
+# Standalone smoke executable: proves the generated bindings compile and the
+# wire messages round-trip, with no Emacs or bridge logic involved.
+add_executable(codegen_smoke tests/codegen_smoke.cpp)
+target_link_libraries(codegen_smoke PRIVATE rpc_bridge_proto)
+
+enable_testing()
+add_test(NAME codegen_smoke COMMAND codegen_smoke)

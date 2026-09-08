@@ -12,7 +12,8 @@
       "description": "Configure into build/ with a Debug build type, like the mise 'configure' task",
       "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_PREFIX_PATH": "/home/lesliebinbinhuang/local"
       }
     }
   ],
