@@ -67,7 +67,15 @@ This runbook defines the procedural workflow for implementing, maintaining, and 
    emacs -Q --batch -l output.el --eval '(your-transpiled-function)'
    ```
 
-## 5. Troubleshooting & Edge Cases
+### Step 5: Standard Elisp Functions Stubs (Branch `elisp-std-functions-stub`)
+1. **Target**: `~/codings/ruby-elisp-transpiler/` on git branch `elisp-std-functions-stub`.
+2. **Strategy**: Option 2 (Ruby Stubs with YARD docstrings) located at `lib/ruby2elisp/stdlib/`.
+3. **Scope & Exclusions**:
+   - Extract standard Elisp functions via `/usr/local/bin/emacs -Q --batch` (`(subrp ...)`, `(functionp ...)`).
+   - Exclude macros (`macrop`), reader syntax, and user customizations.
+   - Serve strictly as IDE/Language Server code hints (Solargraph, Ruby LSP) without function bodies.
+
+## 6. Troubleshooting & Edge Cases
 - **Lexical vs Dynamic Scoping**: Ensure lexical binding header is present in every emitted file. Special Emacs dynamic variables (e.g. `current-prefix-arg`) must be referenced as symbols without shadowing.
 - **Naming Conventions**: Map Ruby's snake_case `foo_bar` to Elisp kebab-case `foo-bar`, or preserve configurable mapping.
 - **Predicates**: Map Ruby methods ending in `?` (e.g., `nil?`, `empty?`) to Elisp predicates ending in `-p` or `p` (e.g., `null`, `string-empty-p`).
