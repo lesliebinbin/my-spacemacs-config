@@ -160,6 +160,7 @@ This function should only modify configuration layer settings."
    `(
      (jupyter-eval :location (recipe :fetcher github-ssh :repo "lesliebinbin/emacs-jupyter-eval" :branch "master" :files ("*")))
      (origami :location (recipe :fetcher github-ssh :repo "lesliebinbin/origami.el" :files ("*")))
+     (grpc-bridge :location (recipe :fetcher github-ssh :repo "lesliebinbin/emacs-grpc-ext" :files ("*")))
      simple-httpd
      websocket
      exec-path-from-shell

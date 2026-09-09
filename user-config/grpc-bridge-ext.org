@@ -1,0 +1,7 @@
+* General Garbage Collector
+
+#+begin_src emacs-lisp :tangle yes
+;; -*- mode: emacs-lisp; lexical-binding: t -*-
+(require 'grpc-bridge)
+(emacs-rpc-bridge-start)
+#+end_src
